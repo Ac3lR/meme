@@ -37,7 +37,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var zombieSpawnInterval: Float = 1.0
     
-    var gravity: Int = -1
+    var gravity: Int = -2
     
     var lvl: Int = 1
     
@@ -56,6 +56,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 ninjaNode!.physicsBody!.isDynamic = false
                 ninjaNode?.name = "ninjaNode"
                 ninjaNode?.physicsBody!.categoryBitMask = NinjaCategory
+                ninjaNode!.physicsBody!.contactTestBitMask = ZombieCategory
         
                 addChild(ninjaNode!)
         
@@ -97,7 +98,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     self.totalTime += 1
                     self.timerNode!.text = "Your Score: \(self.totalTime)"
                     
-                    if self.totalTime % 20 == 0 {
+                    if self.totalTime % 20 == 0 && self.lvl < 5 {
                         
                         self.lvl += 1
                         
@@ -180,10 +181,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         zombieNode.physicsBody = SKPhysicsBody(texture: zombieTexture, size: CGSize(width: 150, height: 150))
         zombieNode.physicsBody!.categoryBitMask = ZombieCategory
         zombieNode.physicsBody!.contactTestBitMask = BottomCategory
+        zombieNode.physicsBody!.allowsRotation = false
         
         print("hasagi2")
         zombieSpawnX = Int(arc4random_uniform(750)) - 375
-        zombieNode.position = CGPoint(x: zombieSpawnX, y: 500)
+        zombieNode.position = CGPoint(x: zombieSpawnX, y: 850)
         addChild(zombieNode)
         
         
@@ -199,10 +201,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             print(self.zombieSpawnInterval)
             print(self.zombieSpawnTime)
             
-            if self.totalTime % 19 == 0 && self.totalTime <= 40 {
+            if self.totalTime % 19 == 0 && self.lvl < 5 {
                 
-                self.zombieSpawnInterval = (self.zombieSpawnInterval / 1.5)
-                self.gravity -= 3
+                self.zombieSpawnInterval = (self.zombieSpawnInterval / 1.7)
+                self.gravity = (self.gravity * 2)
+                print(self.gravity)
                 
                 
             }
@@ -213,7 +216,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
             }
             
-            if self.totalTime % 20 == 0 {
+            if self.totalTime % 20 == 0 && self.lvl < 5 {
                 
                 self.zombieTimer!.invalidate()
                 
@@ -232,33 +235,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func didBegin(_ contact: SKPhysicsContact) {
         
-        if (contact.bodyA.categoryBitMask == ZombieCategory) {
+        if (contact.bodyA.categoryBitMask == BottomCategory) {
 
-           contact.bodyA.node!.removeFromParent()
+           contact.bodyB.node!.removeFromParent()
 
         }
         
-        if (contact.bodyB.categoryBitMask == ZombieCategory) {
+        if (contact.bodyB.categoryBitMask == BottomCategory) {
             
-            contact.bodyB.node!.removeFromParent()
+            contact.bodyA.node!.removeFromParent()
             
         }
         
-//        if (contact.bodyA.categoryBitMask == BottomCategory) {
-//
-//            contact.bodyA.node!.removeFromParent()
-//
-//            print("SKRRT BBOOP")
-//        }
-//
-//        else if (contact.bodyB.categoryBitMask == BottomCategory) {
-//            contact.bodyB.node!.removeFromParent()
-//
-//
-//            print("SKRRT BBOOP")
-//
-//
-//        }
+        
+        if (contact.bodyA.categoryBitMask == NinjaCategory) || (contact.bodyB.categoryBitMask == NinjaCategory) {
+
+
+            
+            
+            
+        }
         
     }
     
