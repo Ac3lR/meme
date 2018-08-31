@@ -192,6 +192,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
 
+    func resetGame() {
+        
+        
+        let crossFade = SKTransition.crossFade(withDuration: 1.0)
+        let gameScene = SKScene(fileNamed: "SplashScreen")
+        gameScene!.scaleMode = .aspectFill
+        scene!.view!.presentScene(gameScene!, transition: crossFade)
+        
+        
+    }
+    
     
     func zombieTimerFunc() {
         
@@ -250,8 +261,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if (contact.bodyA.categoryBitMask == NinjaCategory) || (contact.bodyB.categoryBitMask == NinjaCategory) {
 
-
             
+            scene?.isPaused = true
+            let winAlertController = UIAlertController(title: "You Died...  Your Score was \(totalTime)", message: nil, preferredStyle: .alert)
+            let dismissAction = UIAlertAction(title: "Okay", style: .destructive) { (alertAction) in
+                self.resetGame()
+            }
+            winAlertController.addAction(dismissAction)
+            view!.window!.rootViewController!.present(winAlertController, animated: true, completion: nil)
             
             
         }
