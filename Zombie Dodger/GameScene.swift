@@ -44,15 +44,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var zombieSpawnRate: Int = 1
 //    var timerCreated: Bool = false
     
+    var firstNinjaCollision: Bool = false
+    
     override func didMove(to view: SKView) {
 
             spawnZombies()
                 
                 let ninjaTexture = SKTexture(imageNamed: "ninja")
                 
-                ninjaNode = SKSpriteNode(texture: ninjaTexture, size: CGSize(width: 175, height: 175))
+                ninjaNode = SKSpriteNode(texture: ninjaTexture, size: CGSize(width: ninjaTexture.size().width/3, height: ninjaTexture.size().height/3))
                 ninjaNode?.position = CGPoint(x: 0, y: -500)
-                ninjaNode?.physicsBody = SKPhysicsBody(texture: ninjaTexture, size: CGSize(width: 175, height: 175))
+                ninjaNode?.physicsBody = SKPhysicsBody(texture: ninjaTexture, size: CGSize(width: ninjaTexture.size().width/3, height: ninjaTexture.size().height/3))
                 ninjaNode!.physicsBody!.isDynamic = false
                 ninjaNode?.name = "ninjaNode"
                 ninjaNode?.physicsBody!.categoryBitMask = NinjaCategory
@@ -62,8 +64,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         
         
-                let bottomLeftPoint = CGPoint(x: -(size.width / 2), y: -700)
-                let bottomRightPoint = CGPoint(x: size.width / 2, y: -700)
+                let bottomLeftPoint = CGPoint(x: -(size.width / 2), y: -750)
+                let bottomRightPoint = CGPoint(x: size.width / 2, y: -750)
         
                 // Bottom node
                 let bottomNode = SKNode()
@@ -174,11 +176,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         print("hasagi")
         var zombieSpawnX = 0
         let randomZombie = Int(arc4random_uniform(4)) + 1
-        
+    
         
         let zombieTexture = SKTexture(imageNamed: "zombie\(randomZombie)")
-        let zombieNode = SKSpriteNode(texture: zombieTexture, size: CGSize(width: 150, height: 150))
-        zombieNode.physicsBody = SKPhysicsBody(texture: zombieTexture, size: CGSize(width: 150, height: 150))
+        let zombieNode = SKSpriteNode(texture: zombieTexture, size: CGSize(width: zombieTexture.size().width/3, height: zombieTexture.size().height/3))
+        zombieNode.physicsBody = SKPhysicsBody(texture: zombieTexture, size: CGSize(width: zombieTexture.size().width/3, height: zombieTexture.size().height/3))
         zombieNode.physicsBody!.categoryBitMask = ZombieCategory
         zombieNode.physicsBody!.contactTestBitMask = BottomCategory
         zombieNode.physicsBody!.allowsRotation = false
@@ -261,16 +263,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if (contact.bodyA.categoryBitMask == NinjaCategory) || (contact.bodyB.categoryBitMask == NinjaCategory) {
 
-            
+            fingerOnNinja = false
             scene?.isPaused = true
+            zombieTimer!.invalidate()
+            gameTimer!.invalidate()
+            if firstNinjaCollision == false {
             let winAlertController = UIAlertController(title: "You Died...  Your Score was \(totalTime)", message: nil, preferredStyle: .alert)
             let dismissAction = UIAlertAction(title: "Okay", style: .destructive) { (alertAction) in
                 self.resetGame()
             }
             winAlertController.addAction(dismissAction)
             view!.window!.rootViewController!.present(winAlertController, animated: true, completion: nil)
-            
-            
+            firstNinjaCollision = true
+            }
         }
         
     }
