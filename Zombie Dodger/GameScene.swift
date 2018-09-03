@@ -42,18 +42,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var lvl: Int = 1
     
     var zombieSpawnRate: Int = 1
-//    var timerCreated: Bool = false
     
     var firstNinjaCollision: Bool = false
     
     override func didMove(to view: SKView) {
 
-            spawnZombies()
+                spawnZombies()
                 
                 let ninjaTexture = SKTexture(imageNamed: "ninja")
                 
                 ninjaNode = SKSpriteNode(texture: ninjaTexture, size: CGSize(width: ninjaTexture.size().width/3, height: ninjaTexture.size().height/3))
-                ninjaNode?.position = CGPoint(x: 0, y: -500)
+                ninjaNode?.position = CGPoint(x: 0, y: 0)
                 ninjaNode?.physicsBody = SKPhysicsBody(texture: ninjaTexture, size: CGSize(width: ninjaTexture.size().width/3, height: ninjaTexture.size().height/3))
                 ninjaNode!.physicsBody!.isDynamic = false
                 ninjaNode?.name = "ninjaNode"
@@ -64,8 +63,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         
         
-                let bottomLeftPoint = CGPoint(x: -(size.width / 2), y: -750)
-                let bottomRightPoint = CGPoint(x: size.width / 2, y: -750)
+                let bottomLeftPoint = CGPoint(x: -(size.width / 2), y: -950)
+                let bottomRightPoint = CGPoint(x: size.width / 2, y: -950)
         
                 // Bottom node
                 let bottomNode = SKNode()
@@ -75,11 +74,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         
         
-                timerNode = SKLabelNode(fontNamed: "Chalkduster")
-                timerNode!.text = "Your Score:"
-                timerNode!.fontSize = 65
-                timerNode!.fontColor = SKColor.green
-                timerNode!.position = CGPoint(x: -300, y: 600)
+                timerNode = SKLabelNode(fontNamed: "ChalkboardSE-Bold")
+                timerNode!.text = "Score: 1"
+                timerNode!.fontSize = 50
+                timerNode!.fontColor = SKColor.white
+                timerNode!.position = CGPoint(x: -260, y: 600)
                 
                 addChild(timerNode!)
         
@@ -87,7 +86,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 lvlNode!.text = "Level 1"
                 lvlNode!.fontSize = 50
                 lvlNode!.color = UIColor.white
-                lvlNode!.position = CGPoint(x: -350, y: 550)
+                lvlNode!.position = CGPoint(x: -270, y: 520)
         
                 addChild(lvlNode!)
         
@@ -98,7 +97,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
                 gameTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { (theTimer) in
                     self.totalTime += 1
-                    self.timerNode!.text = "Your Score: \(self.totalTime)"
+                    self.timerNode!.text = "Score: \(self.totalTime)"
                     
                     if self.totalTime % 20 == 0 && self.lvl < 5 {
                         
@@ -262,11 +261,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         
         if (contact.bodyA.categoryBitMask == NinjaCategory) || (contact.bodyB.categoryBitMask == NinjaCategory) {
-
+            
+            let userDefaults = UserDefaults.standard
+            let highScoreGlobal = UserDefaults().integer(forKey: "highScore")
+            
             fingerOnNinja = false
             scene?.isPaused = true
             zombieTimer!.invalidate()
             gameTimer!.invalidate()
+            
+            if totalTime > highScoreGlobal {
+                
+                userDefaults.set(totalTime, forKey: "highScore")
+
+            }
+            
+            
             if firstNinjaCollision == false {
             let winAlertController = UIAlertController(title: "You Died...  Your Score was \(totalTime)", message: nil, preferredStyle: .alert)
             let dismissAction = UIAlertAction(title: "Okay", style: .destructive) { (alertAction) in
